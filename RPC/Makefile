@@ -1,0 +1,51 @@
+
+C_SIZE = 40000000
+
+WITH_DEBUG_MESSAGES = 0
+
+# 0 : no cache
+# 1 : FIFO cache
+# 2 : random cache 
+# 3 : LRU cache
+C_TYPE = 3
+
+FLAGS = -DCACHE_SIZE=${C_SIZE} -DCACHE_TYPE=${C_TYPE} -DDEBUG_MESSAGES=${WITH_DEBUG_MESSAGES}
+
+all: proxy_client proxy_server
+
+proxy_client: client.o proxy.o constants.o types.o
+	g++ -O3 -L/usr/local/lib client.o proxy.o constants.o types.o -o proxy_client -lthrift
+
+client.o: proxy_client.cpp
+	g++ -O3 ${FLAGS} -Wall -I/usr/local/include/thrift -c proxy_client.cpp -o client.o
+
+
+proxy_server: proxy.o server.o constants.o types.o FIFOCache.o NoCache.o RandomCache.o LRUCache.o
+	g++ -O3 -L/usr/local/lib proxy.o server.o constants.o types.o FIFOCache.o NoCache.o RandomCache.o LRUCache.o -o proxy_server -lthrift -lcurl
+
+LRUCache.o: LRUCache.cc
+	g++ -O3 ${FLAGS} -Wall -I/usr/local/include/thrift -c LRUCache.cc -o LRUCache.o
+
+FIFOCache.o: FIFOCache.cpp
+	g++ -O3 ${FLAGS} -Wall -I/usr/local/include/thrift -c FIFOCache.cpp -o FIFOCache.o
+
+RandomCache.o: RandomCache.cpp
+	g++ -O3 ${FLAGS} -Wall -I/usr/local/include/thrift -c RandomCache.cpp -o RandomCache.o
+
+NoCache.o: NoCache.cpp
+	g++ -O3 ${FLAGS} -Wall -I/usr/local/include/thrift -c NoCache.cpp -o NoCache.o
+
+proxy.o: proxy.cpp
+	g++ -O3 ${FLAGS} -Wall -I/usr/local/include/thrift -c proxy.cpp -o proxy.o
+
+server.o: proxy_server.cpp
+	g++ -O3 ${FLAGS} -Wall -I/usr/local/include/thrift -c proxy_server.cpp -o server.o
+
+constants.o: proxy_server_constants.cpp
+	g++ -O3 -Wall -I/usr/local/include/thrift -c proxy_server_constants.cpp -o constants.o
+
+types.o: proxy_server_types.cpp 
+	g++ -O3 -Wall -I/usr/local/include/thrift -c proxy_server_types.cpp -o types.o
+
+clean:
+	rm -f *.o *.html

@@ -11,7 +11,11 @@
 
 #include <iostream>
 
-#include "cache.h"
+#include "NoCache.h"
+#include "FIFOCache.h"
+#include "RandomCache.h"
+#include "LRUCache.h"
+#include "LFUCache.h"
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -51,15 +55,11 @@ static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 	return size * nmemb;
 }
 
-#define SIZE 400000//400 KBytes
-
 class proxyHandler: virtual public proxyIf
 {
 private:
-	void loadPage(std::string& _return, const std::string& URL)
+	string* loadPage(const string& URL)
 	{
-		//std::cout << "URL: " << URL << std::endl;
-
 		CURL *curl;
 		CURLcode res;
 		struct wd_in wdi;
@@ -69,12 +69,8 @@ private:
 		/* Get a curl handle.  Each thread will need a unique handle. */
 		curl = curl_easy_init();
 
-		//std::cout << "TEST " << std::endl;
-
-		if (NULL != curl)
+		if (NULL != curl)//following block is a copy-paste from the given libcurl example
 		{
-			//std::cout << "TEST2" << std::endl;
-
 			wdi.size = 1024;
 			/* Check for malloc failure in real code. */
 			wdi.data = (char*)malloc(wdi.size);
@@ -88,14 +84,8 @@ private:
 			/* userp parameter passed to write_data. */
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &wdi);
 
-			//std::cout << "TEST3" << std::endl;
-
 			/* Actually perform the query. */
 			res = curl_easy_perform(curl);
-
-			//TODO checks
-
-			//std::cout << "TEST4" << std::endl;
 
 			/* Check the return value and do whatever. */
 
@@ -108,25 +98,61 @@ private:
 			exit(EXIT_FAILURE);
 		}
 
-		/* Now wdi.data has the data from the GET and wdi.len is the length
-		 of the data available, so do whatever. */
-
-		/* Write the content to stdout. */
-		//write(STDOUT_FILENO, wdi.data, wdi.len);
-
-		_return = std::string(wdi.data, wdi.len);
+		string* page_ptr = new string(wdi.data, wdi.len);
 
 		/* cleanup wdi.data buffer. */
 		free(wdi.data);
 
-		//std::cout << "TEST" << std::endl;
+		//cout << "TEST" << endl;
 		//_return = URL;
+
+		return page_ptr;
 	}
 
+	int32_t hit_count;
+	int32_t miss_count;
+	int32_t network_volume;
+	int32_t cached_volume;
+
+
 public:
-	proxyHandler()
+	proxyHandler(string& policy, unsigned int cache_size)
 	{
-		cache = new FIFOCache(SIZE);
+		hit_count=0;
+		miss_count=0;
+		network_volume=0;
+		cached_volume=0;
+
+		if(policy == "FIFO")
+		{
+			cout << "Cache policy: FIFO (" << cache_size << " Bytes)" << endl<< endl;
+
+			cache = new FIFOCache(cache_size);
+		}
+		else if(policy == "Random")
+		{
+			cout << "Cache policy: Random (" << cache_size << " Bytes)" << endl<< endl;
+
+			cache = new RandomCache(cache_size);
+		}
+		else if(policy == "LRU")
+		{
+			cout << "Cache policy: LRU (" << cache_size << " Bytes)" << endl<< endl;
+
+			cache = new LRUCache(cache_size);
+		}
+		else if(policy == "LFU")
+		{
+			cout << "Cache policy: LFU (" << cache_size << " Bytes)" << endl<< endl;
+
+			cache = new LFUCache(cache_size);
+		}
+		else
+		{
+			cout << "Cache policy: No cache! "  << endl << endl;
+
+			cache = new NoCache(cache_size);
+		}
 	}
 
 	~proxyHandler()
@@ -134,25 +160,74 @@ public:
 		delete cache;
 	}
 
-	void getPage(std::string& _return, const std::string& URL)
+	void getPage(string& _return, const string& URL)
 	{
-		if(cache->find(_return, URL))
-		{
-			#if DEBUG_MESSAGES == 1
-			cout << "FOUND: '" << URL << "\' ("  << _return.size() << " Bytes)"<< endl;
-			#endif
+		#if DEBUG_MESSAGES == 1
+			cout << "Page requested: '" << URL << "'"<< endl;
+		#endif
 
-			return;
-		}
-		else
+		string* page_ptr = cache->find(URL);
+
+		if(page_ptr !=  NULL)//page found in local cache
 		{
-			loadPage(_return, URL);//load it from the web
-			cache->add(_return, URL);//put it in the cache
+			hit_count++;
+			cached_volume += page_ptr->size();
 
 			#if DEBUG_MESSAGES == 1
-				cout << "	INSERT: '" << URL << "\' ("  << _return.size() << " Bytes)"<< endl;
+				cout << "	Found requested page in cache: '" << URL << "\' ("  << page_ptr->size() << " Bytes)"<< endl;
 			#endif
+
+			_return	= *page_ptr;
 		}
+		else//page not found in local cache
+		{
+			page_ptr = loadPage(URL);//load it from the web
+
+			if(page_ptr !=  NULL)
+				_return	= *page_ptr;
+
+			#if DEBUG_MESSAGES == 1
+				cout << "	Cache current size: " << cache->getCurrentSize() << " Bytes"<< endl;
+				cout << "	Inserting page: '" << URL << "\' ("  << _return.size() << " Bytes)"<< endl;
+			#endif
+
+			++miss_count;
+			network_volume += page_ptr->size();
+
+			cache->add(URL, page_ptr);//put it in the cache
+		}
+
+		#if DEBUG_MESSAGES == 1
+			cout << endl;
+		#endif
+	}
+
+	int32_t getCachedVolume()
+	{
+		return cached_volume;
+	}
+
+	int32_t getNetworkVolume()
+	{
+		return network_volume;
+	}
+
+	int32_t getHitCount()
+	{
+		return hit_count;
+	}
+
+	int32_t getMissCount()
+	{
+		return miss_count;
+	}
+
+	void resetCounters() 
+	{
+		cached_volume=0;
+		network_volume=0;
+		hit_count=0;
+		miss_count=0;
 	}
 
 private:
@@ -160,10 +235,20 @@ private:
 
 };
 
+//main generated by thrift (modified to take the port as an argument)
 int main(int argc, char **argv)
 {
-	int port = 9090;
-	shared_ptr<proxyHandler> handler(new proxyHandler());
+	if(argc != 4)
+	{
+		cout << "Mandatory input parameters: port cache_policy cache_size" << endl;
+		return -1;
+	}
+
+	int port = atoi(argv[1]);
+
+	string policy = argv[2];
+
+	shared_ptr<proxyHandler> handler(new proxyHandler(policy, atoi(argv[3])));
 	shared_ptr<TProcessor> processor(new proxyProcessor(handler));
 	shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
 	shared_ptr<TTransportFactory> transportFactory(

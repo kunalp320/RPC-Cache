@@ -16,6 +16,11 @@ class proxyIf {
  public:
   virtual ~proxyIf() {}
   virtual void getPage(std::string& _return, const std::string& URL) = 0;
+  virtual int32_t getCachedVolume() = 0;
+  virtual int32_t getNetworkVolume() = 0;
+  virtual int32_t getHitCount() = 0;
+  virtual int32_t getMissCount() = 0;
+  virtual void resetCounters() = 0;
 };
 
 class proxyIfFactory {
@@ -46,6 +51,25 @@ class proxyNull : virtual public proxyIf {
  public:
   virtual ~proxyNull() {}
   void getPage(std::string& /* _return */, const std::string& /* URL */) {
+    return;
+  }
+  int32_t getCachedVolume() {
+    int32_t _return = 0;
+    return _return;
+  }
+  int32_t getNetworkVolume() {
+    int32_t _return = 0;
+    return _return;
+  }
+  int32_t getHitCount() {
+    int32_t _return = 0;
+    return _return;
+  }
+  int32_t getMissCount() {
+    int32_t _return = 0;
+    return _return;
+  }
+  void resetCounters() {
     return;
   }
 };
@@ -158,6 +182,456 @@ class proxy_getPage_presult {
 
 };
 
+
+class proxy_getCachedVolume_args {
+ public:
+
+  proxy_getCachedVolume_args() {
+  }
+
+  virtual ~proxy_getCachedVolume_args() throw() {}
+
+
+  bool operator == (const proxy_getCachedVolume_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const proxy_getCachedVolume_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const proxy_getCachedVolume_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class proxy_getCachedVolume_pargs {
+ public:
+
+
+  virtual ~proxy_getCachedVolume_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _proxy_getCachedVolume_result__isset {
+  _proxy_getCachedVolume_result__isset() : success(false) {}
+  bool success;
+} _proxy_getCachedVolume_result__isset;
+
+class proxy_getCachedVolume_result {
+ public:
+
+  proxy_getCachedVolume_result() : success(0) {
+  }
+
+  virtual ~proxy_getCachedVolume_result() throw() {}
+
+  int32_t success;
+
+  _proxy_getCachedVolume_result__isset __isset;
+
+  void __set_success(const int32_t val) {
+    success = val;
+  }
+
+  bool operator == (const proxy_getCachedVolume_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const proxy_getCachedVolume_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const proxy_getCachedVolume_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _proxy_getCachedVolume_presult__isset {
+  _proxy_getCachedVolume_presult__isset() : success(false) {}
+  bool success;
+} _proxy_getCachedVolume_presult__isset;
+
+class proxy_getCachedVolume_presult {
+ public:
+
+
+  virtual ~proxy_getCachedVolume_presult() throw() {}
+
+  int32_t* success;
+
+  _proxy_getCachedVolume_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class proxy_getNetworkVolume_args {
+ public:
+
+  proxy_getNetworkVolume_args() {
+  }
+
+  virtual ~proxy_getNetworkVolume_args() throw() {}
+
+
+  bool operator == (const proxy_getNetworkVolume_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const proxy_getNetworkVolume_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const proxy_getNetworkVolume_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class proxy_getNetworkVolume_pargs {
+ public:
+
+
+  virtual ~proxy_getNetworkVolume_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _proxy_getNetworkVolume_result__isset {
+  _proxy_getNetworkVolume_result__isset() : success(false) {}
+  bool success;
+} _proxy_getNetworkVolume_result__isset;
+
+class proxy_getNetworkVolume_result {
+ public:
+
+  proxy_getNetworkVolume_result() : success(0) {
+  }
+
+  virtual ~proxy_getNetworkVolume_result() throw() {}
+
+  int32_t success;
+
+  _proxy_getNetworkVolume_result__isset __isset;
+
+  void __set_success(const int32_t val) {
+    success = val;
+  }
+
+  bool operator == (const proxy_getNetworkVolume_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const proxy_getNetworkVolume_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const proxy_getNetworkVolume_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _proxy_getNetworkVolume_presult__isset {
+  _proxy_getNetworkVolume_presult__isset() : success(false) {}
+  bool success;
+} _proxy_getNetworkVolume_presult__isset;
+
+class proxy_getNetworkVolume_presult {
+ public:
+
+
+  virtual ~proxy_getNetworkVolume_presult() throw() {}
+
+  int32_t* success;
+
+  _proxy_getNetworkVolume_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class proxy_getHitCount_args {
+ public:
+
+  proxy_getHitCount_args() {
+  }
+
+  virtual ~proxy_getHitCount_args() throw() {}
+
+
+  bool operator == (const proxy_getHitCount_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const proxy_getHitCount_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const proxy_getHitCount_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class proxy_getHitCount_pargs {
+ public:
+
+
+  virtual ~proxy_getHitCount_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _proxy_getHitCount_result__isset {
+  _proxy_getHitCount_result__isset() : success(false) {}
+  bool success;
+} _proxy_getHitCount_result__isset;
+
+class proxy_getHitCount_result {
+ public:
+
+  proxy_getHitCount_result() : success(0) {
+  }
+
+  virtual ~proxy_getHitCount_result() throw() {}
+
+  int32_t success;
+
+  _proxy_getHitCount_result__isset __isset;
+
+  void __set_success(const int32_t val) {
+    success = val;
+  }
+
+  bool operator == (const proxy_getHitCount_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const proxy_getHitCount_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const proxy_getHitCount_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _proxy_getHitCount_presult__isset {
+  _proxy_getHitCount_presult__isset() : success(false) {}
+  bool success;
+} _proxy_getHitCount_presult__isset;
+
+class proxy_getHitCount_presult {
+ public:
+
+
+  virtual ~proxy_getHitCount_presult() throw() {}
+
+  int32_t* success;
+
+  _proxy_getHitCount_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class proxy_getMissCount_args {
+ public:
+
+  proxy_getMissCount_args() {
+  }
+
+  virtual ~proxy_getMissCount_args() throw() {}
+
+
+  bool operator == (const proxy_getMissCount_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const proxy_getMissCount_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const proxy_getMissCount_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class proxy_getMissCount_pargs {
+ public:
+
+
+  virtual ~proxy_getMissCount_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _proxy_getMissCount_result__isset {
+  _proxy_getMissCount_result__isset() : success(false) {}
+  bool success;
+} _proxy_getMissCount_result__isset;
+
+class proxy_getMissCount_result {
+ public:
+
+  proxy_getMissCount_result() : success(0) {
+  }
+
+  virtual ~proxy_getMissCount_result() throw() {}
+
+  int32_t success;
+
+  _proxy_getMissCount_result__isset __isset;
+
+  void __set_success(const int32_t val) {
+    success = val;
+  }
+
+  bool operator == (const proxy_getMissCount_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const proxy_getMissCount_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const proxy_getMissCount_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _proxy_getMissCount_presult__isset {
+  _proxy_getMissCount_presult__isset() : success(false) {}
+  bool success;
+} _proxy_getMissCount_presult__isset;
+
+class proxy_getMissCount_presult {
+ public:
+
+
+  virtual ~proxy_getMissCount_presult() throw() {}
+
+  int32_t* success;
+
+  _proxy_getMissCount_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class proxy_resetCounters_args {
+ public:
+
+  proxy_resetCounters_args() {
+  }
+
+  virtual ~proxy_resetCounters_args() throw() {}
+
+
+  bool operator == (const proxy_resetCounters_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const proxy_resetCounters_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const proxy_resetCounters_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class proxy_resetCounters_pargs {
+ public:
+
+
+  virtual ~proxy_resetCounters_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class proxy_resetCounters_result {
+ public:
+
+  proxy_resetCounters_result() {
+  }
+
+  virtual ~proxy_resetCounters_result() throw() {}
+
+
+  bool operator == (const proxy_resetCounters_result & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const proxy_resetCounters_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const proxy_resetCounters_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class proxy_resetCounters_presult {
+ public:
+
+
+  virtual ~proxy_resetCounters_presult() throw() {}
+
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class proxyClient : virtual public proxyIf {
  public:
   proxyClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -181,6 +655,21 @@ class proxyClient : virtual public proxyIf {
   void getPage(std::string& _return, const std::string& URL);
   void send_getPage(const std::string& URL);
   void recv_getPage(std::string& _return);
+  int32_t getCachedVolume();
+  void send_getCachedVolume();
+  int32_t recv_getCachedVolume();
+  int32_t getNetworkVolume();
+  void send_getNetworkVolume();
+  int32_t recv_getNetworkVolume();
+  int32_t getHitCount();
+  void send_getHitCount();
+  int32_t recv_getHitCount();
+  int32_t getMissCount();
+  void send_getMissCount();
+  int32_t recv_getMissCount();
+  void resetCounters();
+  void send_resetCounters();
+  void recv_resetCounters();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -197,10 +686,20 @@ class proxyProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
   void process_getPage(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getCachedVolume(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getNetworkVolume(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getHitCount(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getMissCount(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_resetCounters(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   proxyProcessor(boost::shared_ptr<proxyIf> iface) :
     iface_(iface) {
     processMap_["getPage"] = &proxyProcessor::process_getPage;
+    processMap_["getCachedVolume"] = &proxyProcessor::process_getCachedVolume;
+    processMap_["getNetworkVolume"] = &proxyProcessor::process_getNetworkVolume;
+    processMap_["getHitCount"] = &proxyProcessor::process_getHitCount;
+    processMap_["getMissCount"] = &proxyProcessor::process_getMissCount;
+    processMap_["resetCounters"] = &proxyProcessor::process_resetCounters;
   }
 
   virtual ~proxyProcessor() {}
@@ -237,6 +736,51 @@ class proxyMultiface : virtual public proxyIf {
     }
     ifaces_[i]->getPage(_return, URL);
     return;
+  }
+
+  int32_t getCachedVolume() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getCachedVolume();
+    }
+    return ifaces_[i]->getCachedVolume();
+  }
+
+  int32_t getNetworkVolume() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getNetworkVolume();
+    }
+    return ifaces_[i]->getNetworkVolume();
+  }
+
+  int32_t getHitCount() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getHitCount();
+    }
+    return ifaces_[i]->getHitCount();
+  }
+
+  int32_t getMissCount() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getMissCount();
+    }
+    return ifaces_[i]->getMissCount();
+  }
+
+  void resetCounters() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->resetCounters();
+    }
+    ifaces_[i]->resetCounters();
   }
 
 };

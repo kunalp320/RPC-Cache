@@ -1,29 +1,52 @@
+
+WITH_DEBUG_MESSAGES = 0
+
+# 0 : no cache
+# 1 : FIFO cache
+# 2 : random cache 
+# 3 : LRU cache
+# 4 : LFU cache
+
+FLAGS = -DDEBUG_MESSAGES=${WITH_DEBUG_MESSAGES}
+
 all: proxy_client proxy_server
 
 proxy_client: client.o proxy.o constants.o types.o
-	g++ -L/usr/local/lib client.o proxy.o constants.o types.o -o proxy_client -lthrift
+	g++ -O3 -L/usr/local/lib client.o proxy.o constants.o types.o -o proxy_client -lthrift
 
 client.o: proxy_client.cpp
-	g++ -Wall -I/usr/local/include/thrift -c proxy_client.cpp -o client.o
+	g++ -O3 ${FLAGS} -Wall -I/usr/local/include/thrift -c proxy_client.cpp -o client.o
 
 
-proxy_server: proxy.o server.o constants.o types.o cache.o
-	g++ -L/usr/local/lib proxy.o server.o constants.o types.o cache.o -o proxy_server -lthrift -lcurl
+proxy_server: proxy.o server.o constants.o types.o FIFOCache.o NoCache.o RandomCache.o LRUCache.o LFUCache.o
+	g++ -O3 -L/usr/local/lib proxy.o server.o constants.o types.o FIFOCache.o NoCache.o RandomCache.o LRUCache.o LFUCache.o -o proxy_server -lthrift -lcurl
 
-cache.o: cache.cpp
-	g++ -Wall -I/usr/local/include/thrift -c cache.cpp -o cache.o
+LFUCache.o: LFUCache.cc
+	g++ -O3 ${FLAGS} -Wall -I/usr/local/include/thrift -c LFUCache.cc -o LFUCache.o
+
+LRUCache.o: LRUCache.cc
+	g++ -O3 ${FLAGS} -Wall -I/usr/local/include/thrift -c LRUCache.cc -o LRUCache.o
+
+FIFOCache.o: FIFOCache.cpp
+	g++ -O3 ${FLAGS} -Wall -I/usr/local/include/thrift -c FIFOCache.cpp -o FIFOCache.o
+
+RandomCache.o: RandomCache.cpp
+	g++ -O3 ${FLAGS} -Wall -I/usr/local/include/thrift -c RandomCache.cpp -o RandomCache.o
+
+NoCache.o: NoCache.cpp
+	g++ -O3 ${FLAGS} -Wall -I/usr/local/include/thrift -c NoCache.cpp -o NoCache.o
 
 proxy.o: proxy.cpp
-	g++ -Wall -I/usr/local/include/thrift -c proxy.cpp -o proxy.o
+	g++ -O3 ${FLAGS} -Wall -I/usr/local/include/thrift -c proxy.cpp -o proxy.o
 
 server.o: proxy_server.cpp
-	g++ -Wall -I/usr/local/include/thrift -c proxy_server.cpp -o server.o
+	g++ -O3 ${FLAGS} -Wall -I/usr/local/include/thrift -c proxy_server.cpp -o server.o
 
 constants.o: proxy_server_constants.cpp
-	g++ -Wall -I/usr/local/include/thrift -c proxy_server_constants.cpp -o constants.o
+	g++ -O3 -Wall -I/usr/local/include/thrift -c proxy_server_constants.cpp -o constants.o
 
 types.o: proxy_server_types.cpp 
-	g++ -Wall -I/usr/local/include/thrift -c proxy_server_types.cpp -o types.o
+	g++ -O3 -Wall -I/usr/local/include/thrift -c proxy_server_types.cpp -o types.o
 
 clean:
 	rm -f *.o *.html

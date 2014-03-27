@@ -27,6 +27,31 @@ class proxyHandler : virtual public proxyIf {
     printf("getPage\n");
   }
 
+  int32_t getCachedVolume() {
+    // Your implementation goes here
+    printf("getCachedVolume\n");
+  }
+
+  int32_t getNetworkVolume() {
+    // Your implementation goes here
+    printf("getNetworkVolume\n");
+  }
+
+  int32_t getHitCount() {
+    // Your implementation goes here
+    printf("getHitCount\n");
+  }
+
+  int32_t getMissCount() {
+    // Your implementation goes here
+    printf("getMissCount\n");
+  }
+
+  void resetCounters() {
+    // Your implementation goes here
+    printf("resetCounters\n");
+  }
+
 };
 
 int main(int argc, char **argv) {

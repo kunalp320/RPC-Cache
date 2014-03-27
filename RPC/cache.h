@@ -1,23 +1,44 @@
-#ifndef CACHE_H
-#define CACHE_H
-
 #include <string>
 #include <queue>
 #include <map>
 
+#define DEBUG_MESSAGES 1
+
 class Cache
 {
 public:
-	Cache(unsigned int size){}//maximal sum of the sizes of all pages in the cache
+	Cache(unsigned int size){}
 	virtual ~Cache(){}
 
-	virtual std::string* find(const std::string& URL)=0;//return the page address if the URL is found, else NULL
-	virtual void add(const std::string& URL, std::string* page_ptr)=0;//add the (URL, page_ptr) pair to the cache
-
-	virtual unsigned int getCurrentSize()=0;//returns the current size of the cache
+	virtual bool find(std::string& _return, const std::string& URL)=0;
+	virtual void add(std::string& _return, const std::string& URL)=0;
 
 protected:
-	Cache(){}//implicitly called by children classes in their own constructors
+	Cache(){}
 };
 
-#endif
+class NoCache: public Cache
+{
+public:
+	NoCache(unsigned int size){}
+	virtual ~NoCache(){}
+
+	bool find(std::string& _return, const std::string& URL);
+	void add(std::string& _return, const std::string& URL);
+};
+
+class FIFOCache: public Cache
+{
+public:
+	FIFOCache(unsigned int size);
+	virtual ~FIFOCache(){}
+
+	bool find(std::string& _return, const std::string& URL);
+	void add(std::string& _return, const std::string& URL);
+
+private:
+	unsigned int current_size;
+	unsigned int max_size;
+	std::queue<std::string> cache;//queue of the URLs that are in the map
+	std::map<std::string, std::string> URL_to_page;
+};

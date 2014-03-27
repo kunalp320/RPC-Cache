@@ -10,12 +10,9 @@ using namespace apache::thrift::protocol;
 using namespace apache::thrift::transport;
 
 using namespace Proxy;
-using namespace std;
 
 #include <sstream>
 #include <fstream>
-
-
 
 template <typename T>
 std::string to_string( T Number )
@@ -25,20 +22,9 @@ std::string to_string( T Number )
 	return ss.str();
 }
 
-//client takes host, port and an file of URLs (one URL per line, only URLs, not blank line)
 int main(int argc, char **argv) 
 {
-	if(argc != 4)
-	{
-		cout << "Mandatory input parameters: host port urls_file" << endl;
-		return -1;
-	}
-
-	std::string host = argv[1];
-	int port = atoi(argv[2]);
-	std::string urls_file = argv[3];
-
-	boost::shared_ptr<TSocket> socket(new TSocket(host, port));
+	boost::shared_ptr<TSocket> socket(new TSocket("localhost", 9090));
 	boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
 	boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
 
@@ -46,72 +32,42 @@ int main(int argc, char **argv)
 	transport->open();
 
 
-	std::ifstream myStream;
+	std::ifstream ifs;
 
-	myStream.open (urls_file.c_str(), std::ifstream::in);
+	ifs.open ("urls", std::ifstream::in);
 
 	std::string URL;
 
-	std::getline(myStream,URL);
+	std::getline(ifs,URL);
 
-	#if DEBUG_MESSAGES == 1
+	std::string base = "output_file_";
 
-		std::string base = "output_file_";
+	int i = 0;
 
-		int N = 0;
-	#endif
-
-	unsigned int totalSize = 0;
-
-
-	struct timeval tp;
-	gettimeofday( &tp, NULL );
-
-	unsigned long long  begin = 1e6*tp.tv_sec+tp.tv_usec;
-	while (myStream.good())
+	while (ifs.good())
 	{
 		std::string page;
 
-		client.getPage(page, URL);//RPC call: get the page corresponding to the given URL
+		client.getPage(page, URL);
 
-		#if DEBUG_MESSAGES == 1
+		std::string output = base+to_string(i)+".html";
 
-			//write the page as an "output_file_N.html" file
-			std::string output = base+to_string(N)+".html";
+		++i;
 
-			std::ofstream myfile(output.c_str());
-			myfile << page;
-			myfile.close();
+		std::ofstream myfile(output.c_str());
+		myfile << page;
+		myfile.close();
 
-			++N;
-		#endif
-
-		totalSize += page.size();
-
-		std::getline(myStream,URL);
+		std::getline(ifs,URL);
 	}
 
-	gettimeofday( &tp, NULL );
-	unsigned long long end = 1e6*tp.tv_sec+tp.tv_usec;
+	ifs.close();
 
-	cout << "Time taken: " << double(end - begin)*1e-6 << " sec" << endl;
+	//std::cout << "page: " << std::endl << std::endl;
+	//std::cout << page << std::endl;
 
-	int32_t cached = client.getCachedVolume();
-	int32_t not_cached = client.getNetworkVolume();
-	int32_t hit = client.getHitCount();
-	int32_t miss = client.getMissCount();
+	//TODO
 
-	#if DEBUG_MESSAGES == 1
-		cout << "Client received " << totalSize << " Bytes from the server" << endl;
-
-		cout << "There were " << hit << " cache hits and " << miss<< " cache misses" << endl;
-	#endif
-
-		cout << "Cache hit rate: " << hit/(1.0*hit+miss)*100 << " (% of pages)"<< endl;
-		cout << cached << " Bytes came from cache" << endl;
-		cout << not_cached << " Bytes came from the web" << endl;
-
-	myStream.close();
 
 	transport->close();
 

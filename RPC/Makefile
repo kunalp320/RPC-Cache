@@ -1,12 +1,6 @@
 
 WITH_DEBUG_MESSAGES = 0
 
-# 0 : no cache
-# 1 : FIFO cache
-# 2 : random cache 
-# 3 : LRU cache
-# 4 : LFU cache
-
 FLAGS = -DDEBUG_MESSAGES=${WITH_DEBUG_MESSAGES}
 
 all: proxy_client proxy_server

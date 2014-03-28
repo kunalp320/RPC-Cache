@@ -1,5 +1,5 @@
 
-WITH_DEBUG_MESSAGES = 1
+WITH_DEBUG_MESSAGES = 0
 
 # 0 : no cache
 # 1 : FIFO cache

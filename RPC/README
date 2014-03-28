@@ -1,1 +1,14 @@
-TODO
+To build the code, just run 'make' in the directory.
+
+You can set WITH_DEBUG_MESSAGES = 1 in the makefile if you want the client and server to be verbose (it is slow because the client create one .html file per page received from the server).
+
+To run the server:		./proxy_server port cache_policy (LRU, FIFO, LFU, Random NoCache),  cache_size (in Bytes)
+
+e.g:				./proxy_server 9000 LRU 10000000		
+
+
+To run the client:		./proxy_client host port urls_file
+
+e.g:				./proxy_client localhost 9000 randomURLS
+
+We used 3 URL files: randomURLS to initialize the cache (before each measure), testcase1 and testcase2.
